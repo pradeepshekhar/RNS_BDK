@@ -88,10 +88,7 @@ main() {
     //Declaring variables to store inputs
     int64_t a=19,b=21,n=29,r,kk,gcd;
     //Declaring arrays to store RNS representation of inputs
-    int64_t A[k];
-    int64_t B[k];
-    int64_t N[k];
-    int64_t R[k];
+    int64_t A[k],B[k],N[k],R[k],N_bar[k];
     findRNS(m,A,a,k); //findRNS checked and working
     findRNS(m,B,b,k);
     findRNS(m,N,n,k);
@@ -99,14 +96,16 @@ main() {
         printf("%llu \n",B[i]);
     } */
     //CRT checked and working?
-    int64_t value,nn[]={7,9,11},T[]={0,4,0,0,8},r_hat,n_hat;
+    int64_t value,nn[]={7,9,11},T[]={0,4,0,0,8},r_hat,n_hat,n_bar;
     value=findCRT(m,T,k);
-    printf("CRT() - %llu \n",value);
+    printf("CRT() - %lld\n",value);
     kk=floor(log(n)/log(2)+1);
     r=pow(2,kk);
     findRNS(m,R,r,k);
     gcd=findGCD(r,n,&r_hat,&n_hat);
-    printf("%llu \n",gcd);
+    n_bar= -n_hat;
+    findRNS(m,N_bar,n_bar,k);
+    printf("%lld %lld %lld \n",gcd,r_hat,n_hat);
     double time;
     clock_t start=clock();
     //for()
