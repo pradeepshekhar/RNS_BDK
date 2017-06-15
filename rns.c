@@ -11,7 +11,9 @@ int64_t findCRT(unsigned int k, int64_t* n,int64_t m,int64_t* prod, int64_t c[k]
 
     for(i=1;i<k;i++){
         for(j=0;j<i;j++){
-            r[i][j+1]=((((r[i][j]-r[j][j])*c[i][j])%n[i])+n[i])%n[i];
+            r[i][j+1]=((r[i][j]-r[j][j])*c[i][j])%n[i];
+            if(r[i][j+1]<0)
+                r[i][j+1]=(r[i][j+1]+n[i])%n[i];
             }
     }
     for(i=0;i<k;i++){
@@ -24,7 +26,8 @@ void findRNS(int64_t* m,int64_t* X,int64_t x,unsigned int k){
     int i;
     for(i=0;i<k;i++){
         X[i]=x % m[i];
-        X[i]=(X[i]+m[i])% m[i];
+        if(X[i]<0)
+                X[i]= (X[i]+m[i])%m[i];
     }
 }
 
@@ -74,9 +77,9 @@ main() {
     for(i=1;i<k;i++){
         for(j=0;j<i;j++){
             gcd=findGCD(m[j],m[i],&c_crt[i][j],&t_crt);
-            c_crt[i][j]= (c_crt[i][j]+m[i])%m[i];
+            if(c_crt[i][j]<0) c_crt[i][j]= (c_crt[i][j]+m[i])%m[i];
             gcd=findGCD(P[j],P[i],&c_p_crt[i][j],&t_p_crt);
-            c_p_crt[i][j]= (c_p_crt[i][j]+P[i])%P[i];
+            if(c_p_crt[i][j]<0) c_p_crt[i][j]= (c_p_crt[i][j]+P[i])%P[i];
             //printf("%lld \n",c_crt[i][j]);
         }
     }
@@ -89,8 +92,9 @@ main() {
         }
         //printf("%lld \n",prod_crt[i]);
     }
-    for(loop=0;loop<100000;loop++){
-        a=loop;b=21;n=29;c=26386;d=72931;o=14527;
+    a=19;b=21;n=29;c=26386;d=72931;o=14527;
+    for(loop=0;loop<1000000;loop++){
+
         findRNS(m,A,a,k);
         findRNS(m,B,b,k);
         findRNS(m,N,n,k);
@@ -106,7 +110,7 @@ main() {
         findRNS(m,N_bar,n_bar,k);
         for(i=0;i<k;i++){
             gcd=findGCD(R[i],m[i],&R_inv[i],&n_hat);
-            R_inv[i]=(R_inv[i]+m[i])%m[i];
+            if(R_inv[i]<0) R_inv[i]=(R_inv[i]+m[i])%m[i];
         }
         //Step1 of RNS
         for(i=0;i<k;i++){
@@ -146,7 +150,7 @@ main() {
         findRNS(P,O_P,o,k);
         for(i=0;i<k;i++){
             gcd=findGCD(O_M[i],M[i],&O_M_inv[i],&n_hat);
-            O_M_inv[i]=(O_M_inv[i]+M[i])%M[i];
+            if(O_M_inv[i]<0) O_M_inv[i]=(O_M_inv[i]+M[i])%M[i];
             //printf("%lld \n",O_M_inv[i]);
         }
         for(i=0;i<k;i++)  C_M_neg[i]=M[i]-C_M[i];
@@ -164,8 +168,9 @@ main() {
 
         for(i=1;i<k;i++){
             for(j=0;j<i;j++){
-                r_MRC[i][j+1]=((((r_MRC[i][j]-r_MRC[j][j])*c_crt[i][j])%M[i])+M[i])%M[i];
-                //printf("c_ij[i][j] - %llu , rij - %llu \n",c_ij[i][j],r_MRC[i][j+1]);
+                r_MRC[i][j+1]=(((r_MRC[i][j]-r_MRC[j][j])*c_crt[i][j])%M[i]);
+                if(r_MRC[i][j+1] < 0) r_MRC[i][j+1] = (r_MRC[i][j+1]+M[i])%M[i];
+                //printf("c_ij[i][j] - %llu , rij - %llu \n",c_crt[i][j],r_MRC[i][j+1]);
                 }
         }
 
@@ -217,11 +222,16 @@ main() {
         //Step4
         //Conversion from P to M
         start=clock();
-        for(j=0;j<k;j++) r_p_MRC[j][0]=T_P[j];
+        //for(j=0;j<k;j++) r_p_MRC[j][0]=T_P[j];
+        r_p_MRC[0][0]=T_P[0];
 
         for(i=1;i<k;i++){
+            r_p_MRC[i][0]=T_P[i];
             for(j=0;j<i;j++){
-                r_p_MRC[i][j+1]=((((r_p_MRC[i][j]-r_p_MRC[j][j])*c_p_crt[i][j])%P[i])+P[i])%P[i];
+                r_p_MRC[i][j+1]=(((r_p_MRC[i][j]-r_p_MRC[j][j])*c_p_crt[i][j])%P[i]);
+                if(r_p_MRC[i][j+1]<0)
+                    r_p_MRC[i][j+1]=(r_p_MRC[i][j+1]+P[i])%P[i];
+                //printf("c_ij[i][j] - %llu , rij - %llu \n",c_p_crt[i][j],r_p_MRC[i][j+1]);
                 }
         }
 
@@ -247,25 +257,29 @@ main() {
                 //printf("%lld %lld \n",M_ji[j-1][i],S_MRC[j]);
             }
             T_M[i]=T_M[i]%M[i];
-            //printf("%lld \n",S_P[i]);
+            //printf("%lld \n",T_M[i]);
             stop=clock();
             time_mat[5][i]+=(double)(stop-start)/CLOCKS_PER_SEC;
         }
     }
     double avg;
     for(i=0;i<2;i++){
+        /*
         avg=0;
         for(j=0;j<k;j++){
             avg+=(time_mat[i][j])/k;
         }
-        RNS+=avg;
+        RNS+=avg;*/
+        RNS+=time_mat[i][0];
     }
     for(i=2;i<steps;i++){
+        /*
         avg=0;
         for(j=0;j<k;j++){
             avg+=(time_mat[i][j])/k;
         }
-        BDK+=avg;
+        BDK+=avg; */
+        BDK+=time_mat[i][0];
     }
     printf("RNS time: %f, BDK time: %f, BDK_Qtime: %f, BDK_Ttime: %f ",RNS,BDK,BDK_Qtime,BDK_Ttime);
 }
