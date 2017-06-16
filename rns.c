@@ -1,6 +1,6 @@
 #include "stdio.h"
 #include "time.h"
-#include <Windows.h>
+#include "stdint.h"
 #include "sys/time.h"
 #include "unistd.h"
 #include "math.h"
@@ -261,22 +261,18 @@ main() {
     }
     double avg;
     for(i=0;i<2;i++){
-        /*
         avg=0;
         for(j=0;j<k;j++){
             avg+=(time_mat[i][j])/k;
         }
-        RNS+=avg;*/
-        RNS+=time_mat[i][0];
+        RNS+=avg;
     }
     for(i=2;i<steps;i++){
-        /*
         avg=0;
         for(j=0;j<k;j++){
             avg+=(time_mat[i][j])/k;
         }
-        BDK+=avg; */
-        BDK+=time_mat[i][0];
+        BDK+=avg;
     }
     printf("RNS time: %f, BDK time: %f, BDK_Stime: %f, BDK_Ttime: %f ",RNS,BDK,BDK_Stime/k,BDK_Ttime/k);
 }
