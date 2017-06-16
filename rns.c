@@ -54,7 +54,7 @@ int64_t findGCD(int64_t a, int64_t b, int64_t *x, int64_t *y){
 
 main() {
     int loop;
-    double RNS=0,BDK=0,BDK_Qtime=0,BDK_Ttime=0;
+    double RNS=0,BDK=0,BDK_Stime=0,BDK_Ttime=0;
     clock_t start,stop;
     unsigned int k=5; //m[]={1073741789,1073741783,1073741741,1073741723,1073741719};
     int64_t m[]={3,7,13,19,29},m_BDK,M[]={3,7,13,19,29},p_BDK,P[]={5,11,17,23,31},m_P_inv,prod;
@@ -93,7 +93,7 @@ main() {
         //printf("%lld \n",prod_crt[i]);
     }
     a=19;b=21;n=29;c=26386;d=72931;o=14527;
-    for(loop=0;loop<1000000;loop++){
+    for(loop=0;loop<100000;loop++){
 
         findRNS(m,A,a,k);
         findRNS(m,B,b,k);
@@ -178,7 +178,7 @@ main() {
             S_MRC[i]=r_MRC[i][i];
         }
         stop=clock();
-        BDK_Qtime+=(double)(stop-start)/CLOCKS_PER_SEC;
+        BDK_Stime+=(double)(stop-start)/CLOCKS_PER_SEC;
         //precomputing M_ji
         for(i=1;i<k;i++){
             prod=1;
@@ -232,10 +232,7 @@ main() {
                 if(r_p_MRC[i][j+1]<0)
                     r_p_MRC[i][j+1]=(r_p_MRC[i][j+1]+P[i])%P[i];
                 //printf("c_ij[i][j] - %llu , rij - %llu \n",c_p_crt[i][j],r_p_MRC[i][j+1]);
-                }
-        }
-
-        for(i=0;i<k;i++){
+            }
             T_MRC[i]=r_p_MRC[i][i];
         }
         stop=clock();
@@ -281,5 +278,5 @@ main() {
         BDK+=avg; */
         BDK+=time_mat[i][0];
     }
-    printf("RNS time: %f, BDK time: %f, BDK_Qtime: %f, BDK_Ttime: %f ",RNS,BDK,BDK_Qtime,BDK_Ttime);
+    printf("RNS time: %f, BDK time: %f, BDK_Stime: %f, BDK_Ttime: %f ",RNS,BDK,BDK_Stime/k,BDK_Ttime/k);
 }
